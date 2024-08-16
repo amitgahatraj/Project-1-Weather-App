@@ -1,15 +1,13 @@
 import daisyui from "daisyui";
 import React from "react";
 
-function DailyWeather({ day, temp }) {
+function DailyWeather({ day, temp, weather }) {
   return (
-    <div>
-      <div className="flex-row card bg-sky-200 text-2xl w-96 m-10 ">
-        <div className="card-body m-0 p-0">
-          <h2>{day}</h2>
-          <span></span>
-          <h2>{temp}</h2>
-        </div>
+    <div className="card bg-sky-200 text-center p-4 shadow-md">
+      <div className="card-body">
+        <h2 className="text-xl font-semibold">{day}</h2>
+        <h2 className="text-2xl font-bold">{temp}°F</h2>
+        <p className="text-lg">{weather}</p>
       </div>
     </div>
   );

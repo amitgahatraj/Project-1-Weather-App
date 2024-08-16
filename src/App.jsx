@@ -9,6 +9,7 @@ import DailyForecast from "./components/daily-forecast";
 
 function App() {
   const [data, setData] = useState(null);
+  const [forecast, setForecast] = useState(null);
   const [city, setCity] = useState("");
   const [error, setError] = useState(null);
 
@@ -20,7 +21,7 @@ function App() {
             `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=imperial&appid=c7750b5dce998b9a9f0d393f67ed44bc`
           );
           if (!response.ok) {
-            throw new Error("City not found");
+            throw new Error("City not found. Please try different city");
           }
 
           const data = await response.json();
@@ -34,7 +35,26 @@ function App() {
       }
     };
 
-    fetchData();
+    const fetchForecastData = async () => {
+      try {
+        const forecastResponse = await fetch(
+          `https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=imperial&appid=c7750b5dce998b9a9f0d393f67ed44bc`
+        );
+        if (!forecastResponse.ok) throw new Error("City not found");
+        const forecastData = await forecastResponse.json();
+        setForecast(forecastData);
+        setError(null);
+      } catch (error) {
+        console.error("Error fetching the forecast data:", error);
+        setError(error.message);
+        setForecast(null);
+      }
+    };
+
+    if (city) {
+      fetchData();
+      fetchForecastData();
+    }
   }, [city]); // Fetch data whenever the city changes
 
   return (
@@ -47,9 +67,12 @@ function App() {
           weather={data.weather[0].description}
           country={data.sys.country}
           city={data.name}
+          humidity={data.main.humidity}
+          windSpeed={data.wind.speed}
+          visibility={data.visibility}
         />
       )}
-      <DailyForecast />
+      {forecast && !error && <DailyForecast forecast={forecast} />}
     </div>
   );
 }
