@@ -12,34 +12,6 @@ function App() {
   const [city, setCity] = useState("");
   const [error, setError] = useState(null);
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const response = await fetch(
-  //       "https://api.openweathermap.org/data/2.5/weather?lat=41.652805&lon=-83.537865&appid=c7750b5dce998b9a9f0d393f67ed44bc"
-  //     );
-  //     const data = response.json();
-  //     setData({ ...data });
-  //   };
-
-  //   fetchData();
-  // }, []);
-  //------------------------------------------------------------------------------
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const response = await fetch(
-  //       "https://api.openweathermap.org/data/2.5/weather?q=${city}&units=imperial&appid=c7750b5dce998b9a9f0d393f67ed44bc"
-  //     );
-  //     // You can handle the response here, for example:
-  //     const data = await response.json();
-  //     console.log(data);
-  //     setData(data);
-  //   };
-
-  //   fetchData(); // Call the async function inside useEffect
-  // }, []);
-
-  //------------------------------------------------------------------------------
-
   useEffect(() => {
     const fetchData = async () => {
       if (city) {
@@ -47,11 +19,17 @@ function App() {
           const response = await fetch(
             `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=imperial&appid=c7750b5dce998b9a9f0d393f67ed44bc`
           );
+          if (!response.ok) {
+            throw new Error("City not found");
+          }
 
           const data = await response.json();
           setData(data);
+          setError(null); // Reset error if data is valid
         } catch (error) {
           console.error("Error fetching the weather data:", error);
+          setError(error.message);
+          setData(null); // Clear the data if there's an error
         }
       }
     };
@@ -60,19 +38,10 @@ function App() {
   }, [city]); // Fetch data whenever the city changes
 
   return (
-    // <div className=" max min-h-screen m-0 p-0">
-    //   <Navigation />
-    //   <Stats
-    //     temp={"data.main.temp"}
-    //     weather={"data.sys.weather"}
-    //     city={"data.name"}
-    //   />
-    //   <DailyForecast />
-    // </div>
-
     <div className="max min-h-screen m-0 p-0">
       <Navigation onSearch={setCity} />
-      {data && (
+      {error && <p className="text-red-500 text-center">{error}</p>}
+      {data && !error && (
         <Stats
           temp={data.main.temp}
           weather={data.weather[0].description}
