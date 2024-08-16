@@ -1,6 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 
-function Navigation() {
+function Navigation({ onSearch }) {
+  const [inputValue, setInputValue] = useState("");
+
+  const handleInputChange = (e) => {
+    setInputValue(e.target.value);
+  };
+
+  const handleSearch = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      onSearch(inputValue); // Pass the input value to the parent component
+      setInputValue(""); // Clear the input field after search
+    }
+  };
   return (
     <div>
       <div className="navbar bg-base-100">
@@ -12,6 +25,9 @@ function Navigation() {
             <input
               type="text"
               placeholder="Search"
+              value={inputValue}
+              onChange={handleInputChange}
+              onKeyDown={handleSearch}
               className="input input-bordered max-w-screen-sm md:w-auto"
             />
           </div>
